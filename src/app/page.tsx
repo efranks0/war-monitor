@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { allCountries } from "@/data/launches";
+import { cyprusNavalData } from "@/data/naval";
 import { LaunchTable } from "@/components/LaunchTable";
+import { NavalTable } from "@/components/NavalTable";
 
 const tabs = [
   { key: "iran", label: "🇮🇷 Iran", idx: 0 },
@@ -60,6 +62,11 @@ export default function Home() {
 
       {/* Active table */}
       <LaunchTable data={activeData} />
+
+      {/* Naval section */}
+      <div className="mt-10">
+        <NavalTable data={cyprusNavalData} />
+      </div>
 
       {/* Footer */}
       <p className="text-center text-xs text-gray-600 mt-8">
