@@ -5,6 +5,7 @@ import { allCountries } from "@/data/launches";
 import { cyprusNavalData } from "@/data/naval";
 import { LaunchTable } from "@/components/LaunchTable";
 import { NavalTable } from "@/components/NavalTable";
+import { LiveFeed } from "@/components/LiveFeed";
 
 const tabs = [
   { key: "iran", label: "🇮🇷 Iran", idx: 0 },
@@ -62,6 +63,11 @@ export default function Home() {
 
       {/* Active table */}
       <LaunchTable data={activeData} />
+
+      {/* Live intelligence feed */}
+      <div className="mt-10">
+        <LiveFeed />
+      </div>
 
       {/* Naval section */}
       <div className="mt-10">
