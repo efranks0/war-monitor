@@ -6,6 +6,7 @@ import type { NavalDeployment } from "@/data/naval";
 import { LaunchTable } from "@/components/LaunchTable";
 import { NavalTable } from "@/components/NavalTable";
 import { LiveFeed } from "@/components/LiveFeed";
+import { AddDayForm } from "@/components/AddDayForm";
 
 const tabs = [
   { key: "iran", label: "\u{1F1EE}\u{1F1F7} Iran", idx: 0 },
@@ -20,8 +21,6 @@ export default function Home() {
   const [launches, setLaunches] = useState<LaunchesResponse | null>(null);
   const [naval, setNaval] = useState<NavalDeployment | null>(null);
   const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(false);
-  const [updateResult, setUpdateResult] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
@@ -52,26 +51,6 @@ export default function Home() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-
-  const triggerUpdate = async () => {
-    setUpdating(true);
-    setUpdateResult(null);
-    try {
-      const res = await fetch("/api/daily-update", { method: "POST" });
-      const result = await res.json();
-      if (result.success) {
-        setUpdateResult(`Added ${result.date} (${result.confidence} confidence). ${result.summary}`);
-        // Refresh data
-        await fetchData();
-      } else {
-        setUpdateResult(result.message || "No new data available");
-      }
-    } catch (err) {
-      setUpdateResult(`Update failed: ${String(err)}`);
-    } finally {
-      setUpdating(false);
-    }
-  };
 
   if (loading) {
     return (
@@ -145,36 +124,12 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Daily update controls */}
-      <div className="flex items-center justify-center gap-3 mb-6">
-        <button
-          onClick={triggerUpdate}
-          disabled={updating}
-          className={`px-4 py-2 rounded-lg text-sm font-medium border transition-all cursor-pointer ${
-            updating
-              ? "bg-gray-800 border-gray-700 text-gray-500 cursor-wait"
-              : "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20"
-          }`}
-        >
-          {updating ? "Fetching OSINT & analyzing..." : "Fetch latest day"}
-        </button>
-        <span className="text-xs text-gray-600">
-          Last updated: {lastUpdated}
-        </span>
-      </div>
+      {/* Add day form */}
+      <AddDayForm onAdded={fetchData} />
 
-      {/* Update result banner */}
-      {updateResult && (
-        <div className="mb-6 mx-auto max-w-2xl px-4 py-3 rounded-lg bg-gray-800/80 border border-gray-700 text-sm text-gray-300 text-center">
-          {updateResult}
-          <button
-            onClick={() => setUpdateResult(null)}
-            className="ml-3 text-gray-500 hover:text-gray-300 cursor-pointer"
-          >
-            x
-          </button>
-        </div>
-      )}
+      <p className="text-center text-xs text-gray-600 mb-6">
+        Last updated: {lastUpdated}
+      </p>
 
       {/* Country tabs */}
       <div className="flex gap-1 mb-6 bg-gray-900/60 p-1 rounded-xl border border-gray-800 w-fit mx-auto">
